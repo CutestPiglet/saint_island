@@ -73,6 +73,13 @@ TEMPLATES = [
 WSGI_APPLICATION = 'saint_island.wsgi.application'
 
 
+# https://github.com/heroku/django-heroku
+# Configure Django App for Heroku.
+
+import django_heroku
+django_heroku.settings(locals())
+
+
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
