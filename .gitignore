@@ -1,0 +1,7 @@
+*.py[co]
+*.swp
+*.sqlite*
+*.DS_Store
+media/*
+tmp/*
+staticfiles/*
