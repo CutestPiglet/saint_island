@@ -2,9 +2,16 @@
 
 {% block scripts %}
     <script>
-        $(".custom-file-input").on("change", function() {
+        $("input#custom-file").on("change", function() {
             var fileName = $(this).val().split("\\").pop();
-            $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+            $(this).siblings("label.custom-file-label").addClass("selected").html(fileName);
+
+            if ($(this).get(0).files.length > 0) {
+                $("input#upload-file").prop("disabled", false);
+            }
+            else {
+                $("input#upload-file").prop("disabled", true);
+            }
         });
     </script>
 {% endblock scripts %}
@@ -15,10 +22,16 @@
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title">Convert</h5>
-                    <form>
-                        <div class="custom-file">
-                            <input type="file" class="custom-file-input" id="customFile" accept="text/plain">
-                            <label class="custom-file-label" for="customFile">Choose a ~.txt file</label>
+                    <form method="POST" enctype="multipart/form-data" id="upload-file-form">
+                        {% csrf_token %}
+                        <div class="input-group mb-3">
+                            <div class="custom-file">
+                                <input type="file" class="custom-file-input" id="custom-file" name="uploaded-file">
+                                <label class="custom-file-label" for="custom-file">Choose a ~.txt file</label>
+                            </div>
+                            <div class="input-group-append">
+                                <input class="btn btn-primary" type="submit" value="Upload" id="upload-file" form="upload-file-form" disabled>
+                            </div>
                         </div>
                     </form>
                 </div>
