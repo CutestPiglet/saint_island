@@ -26,6 +26,7 @@ SECRET_KEY = 'p@y_xs3y1jn#o#l21_jo-nf232)@%#&(#j!%65g!&by-j)bg+n'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = bool(int(os.environ.get('DJANGO_DEBUG', 1)))
+TEMPLATE_DEBUG = DEBUG
 
 ALLOWED_HOSTS = []
 
@@ -128,3 +129,4 @@ STATIC_ROOT = 'staticfiles'
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
