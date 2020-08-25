@@ -1,4 +1,16 @@
 {% extends 'chufang/base.html' %}
+{% load chufang %}
+
+{% block styles %}
+    <style>
+        th {
+            vertical-align: middle !important;
+        }
+        td {
+            vertical-align: top !important;
+        }
+    </style>
+{% endblock styles %}
 
 {% block scripts %}
     <script>
@@ -17,11 +29,22 @@
 {% endblock scripts %}
 
 {% block main_content %}
+
+    {% for message in messages %}
+        <div class="alert alert-danger alert-dismissible" role="alert">
+            <strong>{{ message.extra_tags }}</strong>
+            {{ message }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    {% endfor %}
+
     <div class="row">
         <div class="col-md-6">
             <div class="card">
                 <div class="card-body">
-                    <h5 class="card-title">Convert</h5>
+                    <h5 class="card-title">Sequence Listing Conversion</h5>
                     <form method="POST" enctype="multipart/form-data" id="upload-file-form">
                         {% csrf_token %}
                         <div class="input-group mb-3">
@@ -30,7 +53,7 @@
                                 <label class="custom-file-label" for="custom-file">Choose a ~.txt file</label>
                             </div>
                             <div class="input-group-append">
-                                <input class="btn btn-primary" type="submit" value="Upload" id="upload-file" form="upload-file-form" disabled>
+                                <input class="btn btn-primary" type="submit" value="Convert" id="upload-file" form="upload-file-form" disabled>
                             </div>
                         </div>
                     </form>
@@ -38,4 +61,51 @@
             </div>
         </div>
     </div>
+
+    {% if seq_dict %}
+        <hr>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ filename }}</h5>
+                        <table class="table table-striped table-dark table-bordered" style="table-layout: fixed">
+                            <thead>
+                                <th style="width: 110px">Seq Index</th>
+                                <th style="width: 120px">
+                                    Seq Length<br>Seq Type
+                                </th>
+                                <th>Seq</th>
+                            </thead>
+                            <tbody>
+                                <tbody>
+                                    {% for index, seq_content in seq_dict.items %}
+                                        <tr>
+                                            <td>{{ index }}</td>
+                                            <td>
+                                                {{ seq_content.len }}<br>{{ seq_content.type }}
+                                            </td>
+                                            <td style="overflow-wrap: break-word">
+                                                {% if seq_content.dna_or_rna_seq %}
+                                                    {{ seq_content.dna_or_rna_seq }}
+                                                    {% if seq_content.prt_seq %}
+                                                        <hr>
+                                                        <b>PRT</b><br>
+                                                        {% mark_unknown_prt_abbreviation seq_content.prt_seq %}
+                                                    {% endif %}
+                                                {% elif seq_content.prt_seq %}
+                                                    {% mark_unknown_prt_abbreviation seq_content.prt_seq %}
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
 {% endblock main_content %}
