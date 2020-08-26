@@ -12,8 +12,12 @@ def index(request):
 
     if request.method == 'POST':
         sequence_listing_file = request.FILES.get('uploaded-sequence-listing-file')
-        if sequence_listing_file:
-            context['filename'] = sequence_listing_file.name
+        manual_files = request.FILES.getlist('uploaded-manual-files')
+        if sequence_listing_file and manual_files:
+            context.update({
+                'sequence_listing_filename': sequence_listing_file.name,
+                'manual_filenames': ', '.join([f.name for f in manual_files])
+            })
 
             try:
                 seq_dict = utils.convert_sequence(sequence_listing_file)
