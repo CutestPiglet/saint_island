@@ -11,12 +11,12 @@ def index(request):
     context = {}
 
     if request.method == 'POST':
-        uploaded_file = request.FILES.get('uploaded-file')
-        if uploaded_file:
-            context['filename'] = uploaded_file.name
+        sequence_listing_file = request.FILES.get('uploaded-sequence-listing-file')
+        if sequence_listing_file:
+            context['filename'] = sequence_listing_file.name
 
             try:
-                seq_dict = utils.convert_sequence(uploaded_file)
+                seq_dict = utils.convert_sequence(sequence_listing_file)
             except Exception as e:
                 messages.error(request, str(e), extra_tags='Oops! Unexpected exception occured')
             else:

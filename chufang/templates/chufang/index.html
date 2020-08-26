@@ -14,16 +14,22 @@
 
 {% block scripts %}
     <script>
-        $("input#custom-file").on("change", function() {
-            var fileName = $(this).val().split("\\").pop();
-            $(this).siblings("label.custom-file-label").addClass("selected").html(fileName);
-
-            if ($(this).get(0).files.length > 0) {
+        function toggle_upload_file_button() {
+            if ($("input#sequence-listing-file").get(0).files.length > 0 && $("input#manual-files").get(0).files.length > 0) {
                 $("input#upload-file").prop("disabled", false);
             }
             else {
                 $("input#upload-file").prop("disabled", true);
             }
+        }
+        $("input.custom-file-input").on("change", function() {
+            var files = [];
+            for (var i = 0; i < $(this)[0].files.length; i++) {
+                files.push($(this)[0].files[i].name);
+            }
+            $(this).next('.custom-file-label').html(files.join(', '));
+
+            toggle_upload_file_button();
         });
     </script>
 {% endblock scripts %}
@@ -44,17 +50,25 @@
         <div class="col-md-6">
             <div class="card">
                 <div class="card-body">
-                    <h5 class="card-title">Sequence Listing Conversion</h5>
+                    <h5 class="card-title">Sequence Listing Conversion and Comparison</h5>
                     <form method="POST" enctype="multipart/form-data" id="upload-file-form">
                         {% csrf_token %}
-                        <div class="input-group mb-3">
+                        <div class="form-group">
                             <div class="custom-file">
-                                <input type="file" class="custom-file-input" id="custom-file" name="uploaded-file">
-                                <label class="custom-file-label" for="custom-file">Choose a ~.txt file</label>
+                                <input type="file" class="custom-file-input" id="sequence-listing-file" name="uploaded-sequence-listing-file"
+                                       accept="text/plain">
+                                <label class="custom-file-label" for="custom-file">Choose a sequence listing file (~.txt)</label>
                             </div>
-                            <div class="input-group-append">
-                                <input class="btn btn-primary" type="submit" value="Convert" id="upload-file" form="upload-file-form" disabled>
+                        </div>
+                        <div class="form-group">
+                            <div class="custom-file">
+                                <input type="file" class="custom-file-input" id="manual-files" name="uploaded-manual-files"
+                                       accept="application/vnd.openxmlformats-officedocument.wordprocessingml.document" multiple>
+                                <label class="custom-file-label" for="custom-file">Choose manual files (~.docx)</label>
                             </div>
+                        </div>
+                        <div class="text-right">
+                            <input class="btn btn-primary" type="submit" value="Convert and Compare" id="upload-file" form="upload-file-form" disabled>
                         </div>
                     </form>
                 </div>
