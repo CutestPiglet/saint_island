@@ -22,15 +22,22 @@
                 $("input#upload-file").prop("disabled", true);
             }
         }
+
         $("input.custom-file-input").on("change", function() {
             var files = [];
             for (var i = 0; i < $(this)[0].files.length; i++) {
                 files.push($(this)[0].files[i].name);
             }
-            $(this).next('.custom-file-label').html(files.join(', '));
+            $(this).next(".custom-file-label").html(files.join(', '));
 
             toggle_upload_file_button();
         });
+
+        $('form#upload-file-form').submit(function() {
+            $("input#upload-file").prop("disabled", true);
+            $("input#upload-file").css("cursor", "wait");
+            $(document.body).css("cursor", "wait");
+        })
     </script>
 {% endblock scripts %}
 
@@ -82,6 +89,7 @@
                         <li class="list-group-item">Sequence Listing File:<br>{{ sequence_listing_filename }}</li>
                         <li class="list-group-item">Manual Files:<br>{{ manual_filenames }}</li>
                         <li class="list-group-item">Total {{ seq_dict|length }} Sequences</li>
+                        <li id="not-found-seqs" class="list-group-item">Total {{ num_of_not_found_seqs }} Not Found Sequences: {{ not_found_seqs|safe }}</li>
                     </ul>
                 </div>
             </div>
@@ -105,8 +113,14 @@
                             <tbody>
                                 <tbody>
                                     {% for index, seq_content in seq_dict.items %}
-                                        <tr>
-                                            <td>{{ index }}</td>
+                                        <tr {% if not seq_content.is_found %}style="background-color: indianred"{% endif %}>
+                                            <td>
+                                                {% if not seq_content.is_found %}
+                                                    <a id="{{ index }}" href="#not-found-seqs" style="color: white">{{ index }}</a>
+                                                {% else %}
+                                                    {{ index }}
+                                                {% endif %}
+                                            </td>
                                             <td>
                                                 {{ seq_content.len }}<br>{{ seq_content.type }}
                                             </td>
@@ -115,7 +129,7 @@
                                                     {{ seq_content.dna_or_rna_seq }}
                                                     {% if seq_content.prt_seq %}
                                                         <hr>
-                                                        <b>PRT</b><br>
+                                                        <strong>PRT</strong><br>
                                                         {% mark_unknown_prt_abbreviation seq_content.prt_seq %}
                                                     {% endif %}
                                                 {% elif seq_content.prt_seq %}

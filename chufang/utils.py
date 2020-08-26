@@ -1,3 +1,6 @@
+from docx import Document
+
+
 def convert_amino_acid_abbreviation(three_letter_abbreviation):
 
     one_letter_abbreviation = {
@@ -77,7 +80,42 @@ def convert_sequence(sequence_listing_file):
                     'type': seq_type,
                     'dna_or_rna_seq': dna_or_rna_seq,
                     'prt_seq': prt_seq,
+                    'is_found': False,
                 },
             })
 
     return seq_dict
+
+
+def compare_sequence(seq_dict, manual_file):
+
+    document = Document(manual_file)
+
+    for _, seq_content in seq_dict.items():
+        target_seqs = []
+        dna_or_rna_seq = seq_content.get('dna_or_rna_seq')
+        prt_seq = seq_content.get('prt_seq')
+        if dna_or_rna_seq:
+            target_seqs.append(dna_or_rna_seq)
+        if prt_seq:
+            target_seqs.append(prt_seq)
+
+        seq_found = [False] * len(target_seqs)
+        for index, target_seq in enumerate(target_seqs):
+            for paragraph in document.paragraphs:
+                if target_seq in paragraph.text:
+                    seq_found[index] = True
+                    break
+
+        for index, target_seq in enumerate(target_seqs):
+            if seq_found[index]:
+                continue
+
+            for table in document.tables:
+                for cell in table._cells:
+                    for paragraph in cell.paragraphs:
+                        if target_seq in paragraph.text:
+                            seq_found[index] = True
+                            break
+
+        seq_content['is_found'] = (seq_content['is_found'] or sum(seq_found) == len(target_seqs))
