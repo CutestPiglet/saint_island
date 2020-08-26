@@ -48,8 +48,12 @@ def convert_sequence(sequence_listing_file):
 
         if SEQ_INDEX_LABEL in line:
             seq_index = int(line.split(SEQ_INDEX_LABEL)[1].strip())
-            seq_len = int(sequence_listing_file.readline().decode().split(SEQ_LEN_LABEL)[1].strip())
-            seq_type = sequence_listing_file.readline().decode().split(SEQ_TYPE_LABEL)[1].strip()
+            try:
+                seq_len = int(sequence_listing_file.readline().decode().split(SEQ_LEN_LABEL)[1].strip())
+                seq_type = sequence_listing_file.readline().decode().split(SEQ_TYPE_LABEL)[1].strip()
+            except IndexError:
+                # 210, 211, 212 must appear in three consecutive lines
+                continue
 
             dna_or_rna_seq = prt_seq = ''
             while True:
