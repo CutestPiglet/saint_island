@@ -92,6 +92,9 @@ def compare_sequence(seq_dict, manual_file):
     document = Document(manual_file)
 
     for _, seq_content in seq_dict.items():
+        if seq_content['is_found']:
+            continue
+
         target_seqs = []
         dna_or_rna_seq = seq_content.get('dna_or_rna_seq')
         prt_seq = seq_content.get('prt_seq')
@@ -117,5 +120,11 @@ def compare_sequence(seq_dict, manual_file):
                         if target_seq in paragraph.text:
                             seq_found[index] = True
                             break
+                    else:
+                        continue
+                    break
+                else:
+                    continue
+                break
 
-        seq_content['is_found'] = (seq_content['is_found'] or sum(seq_found) == len(target_seqs))
+        seq_content['is_found'] = sum(seq_found) == len(target_seqs)
